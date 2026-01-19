@@ -1,11 +1,115 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import displayPicture from "../assets/displayPicture.jpg";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// const projects = [
+// 	{
+// 		name: "",
+// 		description: "",
+// 	},
+// ];
+
+// const experiences = [
+// 	{
+// 		role: "",
+// 		company: "",
+// 	},
+
+// ];
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="ar1tra">
+	<main class="space-y-12">
+		<!-- Header Links -->
+		<header class="flex gap-2 text-sm text-gray-500">
+			<a href="https://x.com/ar1tra" target="_blank" rel="noopener noreferrer">Twitter</a>
+			<span>//</span>
+			<a href="https://github.com/aritraghose" target="_blank" rel="noopener noreferrer">GitHub</a>
+			<span>//</span>
+			<a href="https://www.linkedin.com/in/aritraghose/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+			<span>//</span>
+			<a href="mailto:ar1tragh05e9@gmail.com" target="_blank" rel="noopener noreferrer">Email</a>
+		</header>
+
+		<!-- Intro -->
+		<section class="space-y-3">
+			<img src={displayPicture.src} alt="Aritra Ghose" class="w-24 h-24 rounded-sm object-cover" />
+			<div>
+				<h1 class="text-lg font-medium text-gray-900">Aritra Ghose</h1>
+				<p class="text-gray-600">Software Engineer</p>
+			</div>
+		</section>
+
+		<!-- Currently -->
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-gray-500">Currently</h2>
+			<p class="text-gray-800 leading-relaxed">
+				I'm building <a href="#"
+					>something useful</a
+				> while also actively looking for job in engineering roles.
+			</p>
+		</section>
+
+		<!-- Work -->
+		<!-- <section class="space-y-4">
+			<h2 class="text-base font-medium text-gray-500">Work</h2>
+			<div class="space-y-3">
+				{
+					projects.map((project) => (
+						<div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between group">
+							<a
+								href="#"
+								class="font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 group-hover:decoration-black transition-colors shrink-0"
+							>
+								{project.name}
+							</a>
+							<span class="text-gray-500 text-sm hidden sm:block mx-2 border-b border-gray-100 flex-grow" />
+							<span class="text-gray-600 text-sm">
+								{project.description}
+							</span>
+						</div>
+					))
+				}
+			</div>
+		</section> -->
+
+		<!-- Experience -->
+		<!-- <section class="space-y-4">
+			<h2 class="text-base font-medium text-gray-500">Experience</h2>
+			<div class="space-y-2">
+				{
+					experiences.map((exp) => (
+						<div class="text-gray-800">
+							<a href="#" class="text-blue-600 hover:underline">
+								{exp.company}
+							</a>
+							<span class="text-gray-600"> as </span>
+							<span class="font-medium">{exp.role}</span>
+						</div>
+					))
+				}
+			</div>
+		</section> -->
+
+		<!-- Education -->
+		<section class="space-y-4">
+			<h2 class="text-base font-medium text-gray-500">Education</h2>
+			<div class="flex justify-between items-start">
+				<div>
+					<span class="font-medium text-gray-800">BRAC University</span>
+					<p class="text-gray-600">Bachelor of Science in Computer Science and Engineering</p>
+				</div>
+				<span class="text-gray-500 text-sm">2021-2025</span>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class="pt-8 text-gray-600">
+			<p>
+				If you want to see more of my work, you can check out my <a
+					href="https://x.com/ar1tra">twitter</a
+				> or <a href="https://github.com/aritraghose">github</a>
+			</p>
+		</footer>
+	</main>
 </Layout>

@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+
+
+body {
+    @apply text-gray-800;
+}
+
+a {
+    @apply text-gray-600 hover:text-black transition-colors underline decoration-gray-300 underline-offset-4 hover:decoration-black;
+}

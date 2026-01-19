@@ -1,0 +1,46 @@
+---
+import { Slash, User, Lightbulb, Library, Send } from "@lucide/astro";
+
+const navItems = [
+	{ href: "/", icon: Slash, label: "Root" },
+	{ href: "/about", icon: User, label: "About" },
+	{ href: "/posts", icon: Lightbulb, label: "Posts" },
+	{ href: "/projects", icon: Library, label: "Projects" },
+	{ href: "/connect", icon: Send, label: "Connect" },
+];
+---
+
+<nav class="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden md:block">
+	<div class="flex flex-col gap-1 bg-white/60 backdrop-blur-xl border border-gray-200/80 rounded-full p-2 shadow-lg shadow-black/5">
+		{navItems.map((item) => (
+			<a
+				href={item.href}
+				class="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 hover:bg-white/50 hover:text-gray-900 transition-colors relative group"
+				aria-label={item.label}
+			>
+				<item.icon size={18} />
+				<span class="absolute left-full ml-3 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+					{item.label}
+				</span>
+			</a>
+		))}
+	</div>
+</nav>
+
+<!-- Mobile navigation -->
+<nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden">
+	<div class="flex gap-1 bg-white/60 backdrop-blur-xl border border-gray-200/80 rounded-full p-2 shadow-lg shadow-black/5">
+		{navItems.map((item) => (
+			<a
+				href={item.href}
+				class="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 hover:bg-white/50 hover:text-gray-900 transition-colors relative group"
+				aria-label={item.label}
+			>
+				<item.icon size={18} />
+				<span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+					{item.label}
+				</span>
+			</a>
+		))}
+	</div>
+</nav>
