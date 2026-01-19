@@ -20,7 +20,7 @@ const isActive = (href: string) => href === "/" ? currentPath === "/" : currentP
 				href={item.href}
 				class:list={[
 					"w-10 h-10 flex items-center justify-center rounded-full transition-colors relative group",
-					isActive(item.href) ? "bg-black/10 dark:bg-white/5 text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400 hover:bg-black/10 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white"
+					isActive(item.href) ? "nav-active" : "text-gray-500 dark:text-gray-400 hover:bg-black/10 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white"
 				]}
 				aria-label={item.label}
 			>
@@ -41,7 +41,7 @@ const isActive = (href: string) => href === "/" ? currentPath === "/" : currentP
 				href={item.href}
 				class:list={[
 					"w-10 h-10 flex items-center justify-center rounded-full transition-colors relative group",
-					isActive(item.href) ? "bg-black/10 dark:bg-white/5 text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400 hover:bg-black/10 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white"
+					isActive(item.href) ? "nav-active" : "text-gray-500 dark:text-gray-400 hover:bg-black/10 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white"
 				]}
 				aria-label={item.label}
 			>

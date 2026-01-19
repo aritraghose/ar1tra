@@ -1,9 +1,160 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+const skills = {
+	languages: ["C/C++", "Python", "TypeScript", "React.js", "Express.js", "Next.js", "Tanstack Start"],
+	infrastructure: ["Docker", "Git", "Monorepos", "CI/CD", "AWS", "Vercel", "Cloudflare", "WebSockets/WebRTC"],
+};
+
+const coursework = [
+	"Data Structures",
+	"Algorithms",
+	"Discrete Mathematics",
+	"Linear Algebra",
+	"Computer Networks",
+	"Computer Architecture",
+	"Artificial Intelligence"
+];
+
+const projects = [
+	{
+		name: "Pet Connect",
+		description: "A platform for pet lovers with community features, marketplace, and messaging",
+		techStack: "Tailwind, ReactJS, NodeJS, ExpressJS, MongoDB",
+		links: {
+			source: "https://github.com/aaritraa/CSE470",
+			demo: "https://youtu.be/BLwkHSoTu3w",
+		},
+	},
+	{
+		name: "Tax Management System",
+		description: "Tax viewing, payments, admin chat, and rate management",
+		techStack: "ReactJS, NodeJS, ExpressJS, MongoDB",
+		links: {
+			source: "https://github.com/Ridwan-Noor/Tax-Calculator-repo",
+		},
+	},
+	{
+		name: "Firefighter Game",
+		description: "Fire truck game with dynamic environment, health meter and score system",
+		techStack: "Python, OpenGL",
+		links: {
+			source: "https://github.com/Ridwan-Noor/Fire_Truck_repo",
+		},
+	},
+	{
+		name: "Automated Robotic Arm",
+		description: "Object detection and stacking robotic arm with 180° range",
+		techStack: "Arduino, ROS, C",
+		links: {
+			demo: "https://youtu.be/yHj12503bRw",
+		},
+	},
+	{
+		name: "Hospital Management System",
+		description: "Patient appointments, doctor management, and admin supervision portal",
+		techStack: "HTML, CSS, Bootstrap, PHP, MySQL",
+		links: {
+			source: "https://github.com/mitul3737/Mafias-Paradise",
+		},
+	},
+];
+
+const competitions = [
+	{ year: "2023", achievement: "Finalist (8th in preliminary)", event: "IEEE CS Spectrum: Code Crash 2023" },
+	{ year: "2023", achievement: "9th/43 among BRACU Teams", event: "ICPC Preliminary 2023" },
+];
 ---
 
 <Layout title="About | ar1tra">
-	<main>
-		<h1 class="text-lg font-medium text-gray-900">Hello World - About</h1>
+	<main class="space-y-10">
+		<!-- Education -->
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-gray-500">Education</h2>
+			<div>
+				<p class="font-medium text-gray-800">BRAC University</p>
+				<p class="text-gray-600">B.Sc. in Computer Science and Engineering</p>
+				<p class="text-gray-500 text-sm">2021 - 2025 | Dhaka, Bangladesh</p>
+			</div>
+		</section>
+
+		<!-- Skills -->
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-gray-500">Skills</h2>
+			<div class="space-y-2">
+				<div>
+					<p class="text-gray-600 text-sm">Languages & Frameworks</p>
+					<p class="text-gray-800">{skills.languages.join(" · ")}</p>
+				</div>
+				<div>
+					<p class="text-gray-600 text-sm">Infrastructure & Tools</p>
+					<p class="text-gray-800">{skills.infrastructure.join(" · ")}</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Coursework -->
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-gray-500">Coursework</h2>
+			<p class="text-gray-800">{coursework.join(" · ")}</p>
+		</section>
+
+		<!-- Projects -->
+		<section class="space-y-4">
+			<h2 class="text-base font-medium text-gray-500">Projects</h2>
+			<div class="space-y-4">
+				{projects.map((project) => (
+					<div class="space-y-1">
+						<div class="flex flex-wrap items-baseline gap-2">
+							<span class="font-medium text-gray-900">{project.name}</span>
+							{project.links.source && (
+								<a href={project.links.source} target="_blank" rel="noopener noreferrer" class="text-sm">Source</a>
+							)}
+							{project.links.demo && (
+								<a href={project.links.demo} target="_blank" rel="noopener noreferrer" class="text-sm">Demo</a>
+							)}
+						</div>
+						<p class="text-gray-600 text-sm">{project.description}</p>
+						<p class="text-gray-500 text-xs">{project.techStack}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<!-- Thesis -->
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-gray-500">Thesis</h2>
+			<div>
+				<p class="font-medium text-gray-800">Evaluating the Efficacy of GAN-Generated Synthetic Medical Images in Enhancing Deep Learning-Based Diagnosis of Rare Diseases</p>
+				<p class="text-gray-600 text-sm">Undergraduate Thesis | BRAC University | Status: Defended</p>
+				<p class="text-gray-500 text-sm">Supervisor: Md. Tawhid Anwar | Co-Supervisor: Md. Sabbir Ahmed</p>
+			</div>
+		</section>
+
+		<!-- Coding Competitions -->
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-gray-500">Coding Competitions</h2>
+			<div class="space-y-2">
+				{competitions.map((comp) => (
+					<div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
+						<span class="text-gray-500 text-sm shrink-0">{comp.year}</span>
+						<span class="text-gray-800">{comp.achievement}</span>
+						<span class="text-gray-600 text-sm">{comp.event}</span>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<!-- Links -->
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-gray-500">Links</h2>
+			<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+				<a href="https://github.com/aritraghose" target="_blank" rel="noopener noreferrer">GitHub</a>
+				<a href="https://www.linkedin.com/in/aritraghose/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+				<a href="https://x.com/ar1tra" target="_blank" rel="noopener noreferrer">X/Twitter</a>
+				<a href="mailto:ar1tragh05e9@gmail.com" target="_blank" rel="noopener noreferrer">Email</a>
+				<a href="https://drive.google.com/file/d/14rEqYw6P1tMaKrATtQU2RdWH2rMetiOm/view?usp=sharing" rel="noopener noreferrer">CV</a>
+			</div>
+		</section>
 	</main>
 </Layout>

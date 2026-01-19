@@ -23,6 +23,15 @@ html.dark {
     @apply text-gray-300 hover:text-white decoration-gray-500 hover:decoration-white;
   }
 
+  /* Navigation active states */
+  nav a.nav-active {
+    @apply bg-black/10 text-gray-900;
+  }
+
+  .dark nav a.nav-active {
+    @apply bg-white/5 text-white;
+  }
+
   /* Navigation in dark mode */
   .dark nav > div {
     @apply bg-neutral-950/80 border-neutral-700/80;
