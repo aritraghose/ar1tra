@@ -1,0 +1,27 @@
+---
+import ThemeIcon from "./ThemeIcon.astro";
+---
+
+<header class="flex items-center justify-between mb-8 -mt-8">
+	<a href="/" class="flex items-center gap-2 no-underline hover:no-underline">
+		<img src="/icon.png" alt="ar1tra" class="w-5 h-5 rounded-sm" />
+		<span class="logo-text">ar1tra</span>
+	</a>
+	<ThemeIcon />
+</header>
+
+<style>
+	a {
+		text-decoration: none;
+	}
+	a:hover {
+		text-decoration: none;
+	}
+	.logo-text {
+		font-weight: 500;
+		color: #111827;
+	}
+	:global(.dark) .logo-text {
+		color: #f3f4f6;
+	}
+</style>

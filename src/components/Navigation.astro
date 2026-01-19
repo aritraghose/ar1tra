@@ -28,7 +28,7 @@ const navItems = [
 </nav>
 
 <!-- Mobile navigation -->
-<nav class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden">
+<nav id="mobile-nav" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden transition-transform duration-300">
 	<div class="flex gap-1 bg-white/60 backdrop-blur-xl border border-gray-200/80 rounded-full p-2 shadow-lg shadow-black/5">
 		{navItems.map((item) => (
 			<a
@@ -44,3 +44,17 @@ const navItems = [
 		))}
 	</div>
 </nav>
+
+<script>
+	const mobileNav = document.getElementById('mobile-nav');
+	let lastScrollY = window.scrollY;
+
+	window.addEventListener('scroll', () => {
+		if (window.scrollY > lastScrollY && window.scrollY > 50) {
+			mobileNav?.classList.add('translate-y-20');
+		} else {
+			mobileNav?.classList.remove('translate-y-20');
+		}
+		lastScrollY = window.scrollY;
+	});
+</script>

@@ -9,3 +9,50 @@ body {
 a {
     @apply text-gray-600 hover:text-black transition-colors underline decoration-gray-300 underline-offset-4 hover:decoration-black;
 }
+
+
+html.dark {
+    background-color: #0a0a0a;
+  }
+
+  html.dark body {
+    @apply bg-neutral-950 text-gray-50;
+  }
+
+  .dark a {
+    @apply text-gray-300 hover:text-white decoration-gray-500 hover:decoration-white;
+  }
+
+  /* Navigation in dark mode */
+  .dark nav > div {
+    @apply bg-neutral-950/80 border-neutral-700/80;
+  }
+
+  .dark nav a {
+    @apply text-gray-400 hover:bg-neutral-800/50 hover:text-gray-100;
+  }
+
+  .dark nav span {
+    @apply bg-neutral-800 text-gray-100;
+  }
+
+  /* Typography */
+  .dark h1, .dark h2 {
+    @apply text-gray-100;
+  }
+
+  .dark .text-gray-900 {
+    @apply text-gray-100;
+  }
+
+  .dark .text-gray-800 {
+    @apply text-gray-100;
+  }
+
+  .dark .text-gray-600 {
+    @apply text-gray-300;
+  }
+
+  .dark .text-gray-500 {
+    @apply text-gray-400;
+  }
