@@ -8,6 +8,9 @@ const navItems = [
 	{ href: "/projects", icon: Library, label: "Projects" },
 	{ href: "/connect", icon: Send, label: "Connect" },
 ];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) => href === "/" ? currentPath === "/" : currentPath.startsWith(href);
 ---
 
 <nav class="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden md:block">
@@ -15,7 +18,10 @@ const navItems = [
 		{navItems.map((item) => (
 			<a
 				href={item.href}
-				class="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 hover:bg-white/50 hover:text-gray-900 transition-colors relative group"
+				class:list={[
+					"w-10 h-10 flex items-center justify-center rounded-full transition-colors relative group",
+					isActive(item.href) ? "bg-black/10 dark:bg-white/5 text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400 hover:bg-black/10 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white"
+				]}
 				aria-label={item.label}
 			>
 				<item.icon size={18} />
@@ -33,7 +39,10 @@ const navItems = [
 		{navItems.map((item) => (
 			<a
 				href={item.href}
-				class="w-10 h-10 flex items-center justify-center rounded-full text-gray-500 hover:bg-white/50 hover:text-gray-900 transition-colors relative group"
+				class:list={[
+					"w-10 h-10 flex items-center justify-center rounded-full transition-colors relative group",
+					isActive(item.href) ? "bg-black/10 dark:bg-white/5 text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400 hover:bg-black/10 dark:hover:bg-white/20 hover:text-gray-900 dark:hover:text-white"
+				]}
 				aria-label={item.label}
 			>
 				<item.icon size={18} />
