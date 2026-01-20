@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css";
-import { ClientRouter } from "astro:transitions";
 import Navigation from "../components/Navigation.astro";
 import Header from "../components/Header.astro";
 
@@ -19,7 +18,13 @@ const { title = "Portfolio" } = Astro.props;
 		<link rel="icon" type="image/png" href="/icon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<!-- <ClientRouter /> -->
+		<!-- Open Graph tags -->
+		<meta property="og:title" content="ar1tra" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://ar1tra.com" />
+		<meta property="og:description" content="Aritra Ghose's personal website" />
+		<meta property="og:image" content="https://ar1tra.com/og-image.png">
+		<meta property="og:image:alt" content="Aritra Ghose's picture">
 	</head>
 	<body
 		class="bg-white text-gray-900 antialiased font-sans flex justify-center min-h-screen"
