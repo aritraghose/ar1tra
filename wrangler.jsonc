@@ -1,0 +1,22 @@
+{
+	"main": "dist/_worker.js/index.js",
+	"name": "ar1tra",
+  "compatibility_date": "2026-01-20",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": "./dist"
+	},
+	"observability": {
+    "enabled": true
+  },
+  "routes": [
+    {
+      "pattern": "ar1tra.com",
+      "custom_domain": true
+    }
+  ]
+}
