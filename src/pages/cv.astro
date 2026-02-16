@@ -1,0 +1,24 @@
+---
+const cvUrl = "https://drive.google.com/file/d/14rEqYw6P1tMaKrATtQU2RdWH2rMetiOm/view?usp=sharing";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="refresh" content={`0;url=${cvUrl}`} />
+		<meta name="robots" content="noindex" />
+		<link rel="canonical" href={cvUrl} />
+		<title>Redirecting to CV...</title>
+		<script is:inline>
+			window.location.replace(
+				"https://drive.google.com/file/d/14rEqYw6P1tMaKrATtQU2RdWH2rMetiOm/view?usp=sharing",
+			);
+		</script>
+	</head>
+	<body>
+		<p>
+			Redirecting to CV. If you are not redirected,
+			<a href={cvUrl}>click here</a>.
+		</p>
+	</body>
+</html>
