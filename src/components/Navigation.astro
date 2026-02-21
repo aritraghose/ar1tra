@@ -14,7 +14,7 @@ const isActive = (href: string) => href === "/" ? currentPath === "/" : currentP
 ---
 
 <nav class="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden md:block">
-	<div class="flex flex-col gap-1 bg-[#FFFEF5]/80 backdrop-blur-xl border border-gray-200/80 rounded-full p-2 shadow-md shadow-black/5 dark:shadow-black/30">
+	<div class="flex flex-col gap-1 bg-gray-50/90 backdrop-blur-xl border border-gray-200/80 rounded-full p-2 shadow-md shadow-black/5 dark:shadow-black/30">
 		{navItems.map((item) => (
 			<a
 				href={item.href}
@@ -35,7 +35,7 @@ const isActive = (href: string) => href === "/" ? currentPath === "/" : currentP
 
 <!-- Mobile navigation -->
 <nav id="mobile-nav" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:hidden transition-transform duration-300">
-	<div class="flex gap-1 bg-[#FFFEF5]/80 backdrop-blur-xl border border-gray-200/80 rounded-full p-2 shadow-md shadow-black/5 dark:shadow-black/30">
+	<div class="flex gap-1 bg-gray-50/90 backdrop-blur-xl border border-gray-200/80 rounded-full p-2 shadow-md shadow-black/5 dark:shadow-black/30">
 		{navItems.map((item) => (
 			<a
 				href={item.href}
