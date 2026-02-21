@@ -19,11 +19,11 @@ a {
 
 
 html.dark {
-    background-color: #0a0a0a;
+    background-color: #121212;
   }
 
   html.dark body {
-    @apply bg-neutral-950 text-gray-50;
+    @apply bg-[#121212] text-gray-50;
   }
 
   .dark a {
@@ -41,7 +41,7 @@ html.dark {
 
   /* Navigation in dark mode */
   .dark nav > div {
-    @apply bg-neutral-950/80 border-neutral-700/80;
+    @apply bg-neutral-950/80 border-neutral-700/80 shadow-md shadow-black/40;
   }
 
   .dark nav a {
