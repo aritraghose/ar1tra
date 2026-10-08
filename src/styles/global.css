@@ -30,28 +30,6 @@ html.dark {
     @apply text-gray-300 hover:text-white decoration-gray-500 hover:decoration-white;
   }
 
-  /* Navigation active states */
-  nav a.nav-active {
-    @apply bg-black/10 text-gray-900;
-  }
-
-  .dark nav a.nav-active {
-    @apply bg-white/5 text-white;
-  }
-
-  /* Navigation in dark mode */
-  .dark nav > div {
-    @apply bg-neutral-950/80 border-neutral-700/80 shadow-md shadow-black/40;
-  }
-
-  .dark nav a {
-    @apply text-gray-400 hover:bg-neutral-800/50 hover:text-gray-100;
-  }
-
-  .dark nav span {
-    @apply bg-neutral-800 text-gray-100;
-  }
-
   /* Typography */
   .dark h1, .dark h2 {
     @apply text-gray-100;

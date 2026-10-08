@@ -1,12 +1,29 @@
 ---
 import ThemeIcon from "./ThemeIcon.astro";
+
+const navItems = [
+	{ href: "/about", label: "about" },
+	{ href: "/posts", label: "posts" },
+	{ href: "/projects", label: "projects" },
+	{ href: "/connect", label: "connect" },
+];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) => currentPath.startsWith(href);
 ---
 
-<header class="flex items-center justify-between mb-8 -mt-8">
-	<a href="/" class="flex items-center gap-2 no-underline hover:no-underline">
+<header class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-8 -mt-8">
+	<a href="/" class="flex items-center gap-2 mr-auto no-underline hover:no-underline">
 		<img src="/icon.png" alt="ar1tra" class="w-5 h-5 rounded-sm" />
 		<span class="logo-text">ar1tra</span>
 	</a>
+	<nav class="site-nav" aria-label="Primary">
+		{navItems.map((item) => (
+			<a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+				{item.label}
+			</a>
+		))}
+	</nav>
 	<ThemeIcon />
 </header>
 
@@ -23,5 +40,56 @@ import ThemeIcon from "./ThemeIcon.astro";
 	}
 	:global(.dark) .logo-text {
 		color: #f3f4f6;
+	}
+
+	.site-nav {
+		display: flex;
+		gap: 1rem;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+		font-size: 0.8125rem;
+	}
+	.site-nav a {
+		position: relative;
+		color: #6b7280;
+	}
+	.site-nav a:hover {
+		color: #111827;
+	}
+	.site-nav a[aria-current="page"] {
+		color: #1f2937;
+		font-weight: 600;
+	}
+	:global(.dark) .site-nav a {
+		color: #9ca3af;
+	}
+	:global(.dark) .site-nav a:hover {
+		color: #f3f4f6;
+	}
+	:global(.dark) .site-nav a[aria-current="page"] {
+		color: #e5e7eb;
+	}
+
+	/* small dot under the active page */
+	.site-nav a[aria-current="page"]::after {
+		content: "";
+		position: absolute;
+		left: 50%;
+		bottom: -0.4rem;
+		width: 3px;
+		height: 3px;
+		border-radius: 50%;
+		background: currentColor;
+		transform: translateX(-50%);
+	}
+
+	@media (max-width: 480px) {
+		.site-nav {
+			order: 3;
+			width: 100%;
+			margin-top: 0.5rem;
+		}
+		.site-nav a[aria-current="page"]::after {
+			display: none;
+		}
 	}
 </style>
