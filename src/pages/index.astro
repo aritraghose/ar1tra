@@ -49,7 +49,7 @@ import TerminalFooter from "../components/TerminalFooter.astro";
 			<p class="text-gray-800 leading-relaxed">
 				I'm building <span class="relative inline-block group/preview"><a href="#"
 						>something useful</a
-					><span class="absolute left-0 bottom-full mb-2 hidden group-hover/preview:block bg-gray-900 text-white dark:bg-[#FFFEFB] dark:text-gray-900 text-sm px-3 py-1.5 rounded shadow-lg whitespace-nowrap">building..</span></span> while also actively looking for job in engineering roles.
+					><span class="absolute left-0 bottom-full mb-2 hidden group-hover/preview:block bg-gray-900 text-white dark:bg-[#2a2a2a] dark:text-gray-100 text-sm px-3 py-1.5 rounded shadow-lg whitespace-nowrap">building<span class="loading-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></span></span> while also actively looking for job in engineering roles.
 			</p>
 		</section>
 
@@ -121,3 +121,36 @@ import TerminalFooter from "../components/TerminalFooter.astro";
 		</footer>
 	</main>
 </Layout>
+
+<style>
+	/* Dots appear one by one, then reset; widths stay fixed so the tooltip doesn't resize. */
+	.loading-dots span {
+		opacity: 0;
+		animation: loading-dot 1.4s infinite;
+	}
+	.loading-dots span:nth-child(2) {
+		animation-delay: 0.2s;
+	}
+	.loading-dots span:nth-child(3) {
+		animation-delay: 0.4s;
+	}
+	@keyframes loading-dot {
+		0%,
+		15% {
+			opacity: 0;
+		}
+		30%,
+		80% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.loading-dots span {
+			animation: none;
+			opacity: 1;
+		}
+	}
+</style>
