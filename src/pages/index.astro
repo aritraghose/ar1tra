@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import displayPicture from "../assets/displayPicture.jpg";
+import TerminalFooter from "../components/TerminalFooter.astro";
 
 // const projects = [
 // 	{
@@ -22,7 +23,7 @@ import displayPicture from "../assets/displayPicture.jpg";
 	<main class="space-y-12">
 		<!-- Header Links -->
 		<header class="flex gap-2 text-sm text-gray-500">
-			<a href="https://x.com/ar1tra" target="_blank" rel="noopener noreferrer">Twitter</a>
+			<a href="https://x.com/ar1tra" target="_blank" rel="noopener noreferrer">X</a>
 			<span>//</span>
 			<a href="https://github.com/aritraghose" target="_blank" rel="noopener noreferrer">GitHub</a>
 			<span>//</span>
@@ -109,12 +110,14 @@ import displayPicture from "../assets/displayPicture.jpg";
 		<footer class="pt-8 text-gray-600">
 			<p>
 				If you want to know more about me, connect me on <a
-					href="https://x.com/ar1tra">twitter</a
+					href="https://x.com/ar1tra">x/twitter</a
 				> or a bunch of other places<a href="/connect"> here.</a>
 			</p>
-			<p class="mt-16 text-center text-gray-400">
-				<a href="https://github.com/aritraghose/ar1tra" target="_blank" rel="noopener noreferrer">view-source://ar1tra</a>
-			</p>
+			<div class="mt-24">
+				<TerminalFooter command="gh repo view" flags="--web">
+					<a href="https://github.com/aritraghose/ar1tra" target="_blank" rel="noopener noreferrer">aritraghose/ar1tra</a>
+				</TerminalFooter>
+			</div>
 		</footer>
 	</main>
 </Layout>
