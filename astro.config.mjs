@@ -8,9 +8,11 @@ import cloudflare from '@astrojs/cloudflare';
 // https://astro.build/config
 export default defineConfig({
   site: "https://ar1tra.com",
+  // Astro 7 defaults to 'jsx', which strips whitespace between inline elements
+  compressHTML: true,
   vite: {
     plugins: [tailwindcss()]
   },
 
-  adapter: cloudflare()
+  adapter: cloudflare({ imageService: 'compile' })
 });

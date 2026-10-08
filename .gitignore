@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# wrangler local state
+.wrangler/
+
+# claude code local config
+.claude/

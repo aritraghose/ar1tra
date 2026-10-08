@@ -2,6 +2,9 @@
   "name": "ar1tra",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -9,13 +12,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/cloudflare": "^14.3.4",
     "@lucide/astro": "^0.562.0",
     "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.11",
+    "astro": "^7.3.6",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "wrangler": "^4.59.2"
+    "wrangler": "^4.148.0"
   }
 }
