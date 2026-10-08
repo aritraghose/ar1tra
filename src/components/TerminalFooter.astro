@@ -1,0 +1,182 @@
+---
+// Terminal-style footer: a "whoami" readout of the visitor's own edge metadata
+// (fetched from /api/visitor), followed by a final prompt: `command <slotted argument> flags`.
+interface Props {
+	command: string;
+	flags?: string;
+}
+
+const { command, flags } = Astro.props;
+const rows = ["location", "local_time", "asn", "edge", "latency"];
+---
+
+<div class="terminal">
+	<div id="visitor-info" aria-live="polite" hidden>
+		<p><span class="ps1">guest@ar1tra:~$</span> <span class="cmd">whoami --verbose</span></p>
+		<dl>
+			{rows.map((key) => (
+				<div>
+					<dt>{key}</dt>
+					<dd data-field={key}>resolving…</dd>
+				</div>
+			))}
+		</dl>
+	</div>
+	<p><span class="ps1">guest@ar1tra:~$</span> <span class="cmd">{command}</span> <slot />{flags && <> <span class="cmd">{flags}</span></>}</p>
+</div>
+
+<style>
+	.terminal {
+		border-top: 1px solid #e5e7eb;
+		padding-top: 1.5rem;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+		font-size: 0.75rem;
+		line-height: 1.6;
+		color: #4b5563;
+		text-align: left;
+		max-width: 100%;
+		overflow-wrap: anywhere;
+	}
+	.ps1 {
+		color: #4b5563;
+	}
+	dl > div {
+		display: grid;
+		grid-template-columns: 10ch 1fr;
+		gap: 3ch;
+		padding-left: 2ch;
+	}
+	dd {
+		color: #1f2937;
+	}
+	.cmd,
+	dt {
+		color: #000;
+	}
+	.terminal :global(a) {
+		color: #1f2937;
+		text-decoration-color: #9ca3af;
+	}
+	.terminal :global(a:hover) {
+		color: #000;
+		text-decoration-color: #000;
+	}
+	:global(.dark) .terminal {
+		border-color: #2a2a2a;
+		color: #9ca3af;
+	}
+	:global(.dark) .terminal .cmd,
+	:global(.dark) .terminal dt {
+		color: inherit;
+	}
+	:global(.dark) .terminal dd,
+	:global(.dark) .terminal :global(a) {
+		color: #d1d5db;
+		text-decoration-color: #4b5563;
+	}
+	:global(.dark) .terminal :global(a:hover) {
+		color: #fff;
+		text-decoration-color: #fff;
+	}
+	:global(.dark) .ps1 {
+		color: #9ca3af;
+	}
+</style>
+
+<script>
+	type Visitor = {
+		city: string | null;
+		region: string | null;
+		country: string | null;
+		timezone: string | null;
+		asn: number | null;
+		asOrganization: string | null;
+		colo: string | null;
+		httpProtocol: string | null;
+		tlsVersion: string | null;
+		rtt: number | null;
+	};
+
+	const root = document.getElementById("visitor-info");
+	const field = (name: string) => root?.querySelector<HTMLElement>(`[data-field="${name}"]`);
+
+	const countryName = (cc: string) => {
+		try {
+			return new Intl.DisplayNames(["en"], { type: "region" }).of(cc) ?? cc;
+		} catch {
+			return cc;
+		}
+	};
+
+	const utcOffset = (tz: string) => {
+		const part = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "longOffset" })
+			.formatToParts(new Date())
+			.find((p) => p.type === "timeZoneName")?.value;
+		return part === "GMT" ? "UTC+00:00" : (part?.replace("GMT", "UTC") ?? "");
+	};
+
+	function startClock(el: HTMLElement, tz: string, ipTz: string | null) {
+		const fmt = new Intl.DateTimeFormat("en-US", {
+			timeZone: tz,
+			hour: "numeric",
+			minute: "2-digit",
+			second: "2-digit",
+			hour12: true,
+		});
+		let suffix = `${tz}, ${utcOffset(tz)}`;
+		// Browser clock and IP geolocation disagree: probably a VPN / proxy / relay.
+		if (ipTz && ipTz !== tz) suffix += ` · ip says ${ipTz}, vpn?`;
+		const tick = () => (el.textContent = `${fmt.format(new Date())} (${suffix})`);
+		tick();
+		setInterval(tick, 1000);
+	}
+
+	// Cloudflare only measures TCP RTT; over HTTP/3 (QUIC) it's absent, so fall back to
+	// timing our own request to the edge from the browser.
+	function latency(cfRtt: number | null, colo: string | null) {
+		const to = colo ? ` to cf-${colo.toLowerCase()}` : "";
+		if (cfRtt) return `${cfRtt}ms tcp rtt${to}`;
+		const entry = performance
+			.getEntriesByType("resource")
+			.find((e) => e.name.endsWith("/api/visitor")) as PerformanceResourceTiming | undefined;
+		if (entry && entry.responseStart > entry.requestStart) {
+			return `~${Math.round(entry.responseStart - entry.requestStart)}ms http round trip${to}`;
+		}
+		return "unknown";
+	}
+
+	async function load() {
+		if (!root) return;
+		try {
+			const res = await fetch("/api/visitor", { cache: "no-store" });
+			if (!res.ok) throw new Error(String(res.status));
+			const v: Visitor = await res.json();
+
+			const place = [v.city, v.region, v.country && countryName(v.country)].filter(Boolean);
+			field("location")!.textContent = place.length
+				? place.join(", ")
+				: "somewhere on the internet";
+
+			const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			startClock(field("local_time")!, browserTz || v.timezone || "UTC", v.timezone);
+
+			field("asn")!.textContent =
+				v.asn != null ? `AS${v.asn}${v.asOrganization ? ` · ${v.asOrganization}` : ""}` : "unknown";
+
+			const edge = [
+				v.colo && `cf-${v.colo.toLowerCase()}`,
+				v.httpProtocol,
+				v.tlsVersion,
+			].filter(Boolean);
+			field("edge")!.textContent = edge.length ? edge.join(" · ") : "unknown";
+
+			field("latency")!.textContent = latency(v.rtt, v.colo);
+
+			root.hidden = false;
+		} catch {
+			// Not on Cloudflare or blocked: just don't show the widget.
+		}
+	}
+
+	load();
+</script>

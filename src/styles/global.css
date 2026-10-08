@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Make dark: utilities follow the site theme toggle (html.dark) instead of the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 
 body {
