@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import displayPicture from "../assets/displayPicture.jpg";
-import TerminalFooter from "../components/TerminalFooter.astro";
+import VisitorFooter from "../components/VisitorFooter.astro";
 
 // const projects = [
 // 	{
@@ -114,9 +114,9 @@ import TerminalFooter from "../components/TerminalFooter.astro";
 				> or a bunch of other places<a href="/connect"> here.</a>
 			</p>
 			<div class="mt-24">
-				<TerminalFooter command="gh repo view" flags="--web">
-					<a href="https://github.com/aritraghose/ar1tra" target="_blank" rel="noopener noreferrer">aritraghose/ar1tra</a>
-				</TerminalFooter>
+				<VisitorFooter>
+					<a href="https://github.com/aritraghose/ar1tra" target="_blank" rel="noopener noreferrer">view-source://ar1tra</a>
+				</VisitorFooter>
 			</div>
 		</footer>
 	</main>
