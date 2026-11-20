@@ -6,7 +6,7 @@
 /*
  * Design tokens: the single source of truth for site colors.
  * Markup uses the semantic utilities these generate (bg-page, text-heading, text-body,
- * text-subtle, text-muted, text-faint, border-line, bg-tooltip, text-tooltip-fg)
+ * text-subtle, text-muted, text-faint, border-line)
  * instead of raw palette values, so light/dark switching lives only here.
  */
 :root {
@@ -17,13 +17,37 @@
 	--muted: var(--color-gray-500);
 	--faint: var(--color-gray-400);
 	--line: var(--color-gray-200);
-	--tooltip: var(--color-gray-900);
-	--tooltip-fg: var(--color-white);
 
 	--link: var(--color-gray-600);
 	--link-hover: var(--color-black);
 	--link-line: var(--color-gray-300);
 	--link-line-hover: var(--color-black);
+
+	/* Profile card tokens (light) */
+	--pcard-bg: #faf9f6;
+	--pcard-backdrop: rgba(15, 16, 20, 0.36);
+	--pcard-shadow:
+		0 24px 64px -16px rgba(15, 16, 22, 0.25),
+		0 0 0 1px rgba(0, 0, 0, 0.05);
+	--pcard-border-foil: conic-gradient(
+		from 140deg at 50% 50%,
+		#a678d4 0deg,
+		#d8a15d 72deg,
+		#43a888 148deg,
+		#5f82cf 224deg,
+		#cf6884 298deg,
+		#a678d4 360deg
+	);
+	--pcard-sheen: rgba(255, 255, 255, 0.55);
+	--pcard-gutter-text: rgba(24, 24, 27, 0.32);
+	--pcard-avatar-ring: rgba(24, 24, 27, 0.16);
+	--pcard-avatar-bg: #eceae4;
+	--pcard-dot-a: #dc2626;
+	--pcard-dot-b: #059669;
+	--pcard-dot-c: #0284c7;
+	--pcard-dot-d: #7c3aed;
+	--pcard-mesh-opacity: 0.72;
+	--pcard-status-dot: #16a34a;
 }
 
 .dark {
@@ -34,13 +58,38 @@
 	--muted: var(--color-gray-400);
 	--faint: var(--color-gray-400);
 	--line: #2a2a2a;
-	--tooltip: #2a2a2a;
-	--tooltip-fg: var(--color-gray-100);
 
 	--link: var(--color-gray-300);
 	--link-hover: var(--color-white);
 	--link-line: var(--color-gray-500);
 	--link-line-hover: var(--color-white);
+
+	/* Profile card tokens (dark) */
+	--pcard-bg: #08090b;
+	--pcard-backdrop: rgba(3, 5, 8, 0.74);
+	--pcard-shadow:
+		0 28px 80px -12px rgba(0, 0, 0, 0.88),
+		0 0 40px -14px rgba(52, 211, 153, 0.16),
+		0 0 0 1px rgba(255, 255, 255, 0.05);
+	--pcard-border-foil: conic-gradient(
+		from 140deg at 50% 50%,
+		#6c3fa3 0deg,
+		#9e7334 72deg,
+		#2a8c6e 148deg,
+		#3b5b9c 224deg,
+		#9c3856 298deg,
+		#6c3fa3 360deg
+	);
+	--pcard-sheen: rgba(255, 255, 255, 0.11);
+	--pcard-gutter-text: rgba(255, 255, 255, 0.22);
+	--pcard-avatar-ring: rgba(255, 255, 255, 0.18);
+	--pcard-avatar-bg: #1c1e22;
+	--pcard-dot-a: #ef4444;
+	--pcard-dot-b: #10b981;
+	--pcard-dot-c: #38bdf8;
+	--pcard-dot-d: #a855f7;
+	--pcard-mesh-opacity: 0.92;
+	--pcard-status-dot: #34d399;
 }
 
 @theme inline {
@@ -51,8 +100,6 @@
 	--color-muted: var(--muted);
 	--color-faint: var(--faint);
 	--color-line: var(--line);
-	--color-tooltip: var(--tooltip);
-	--color-tooltip-fg: var(--tooltip-fg);
 }
 
 /* Base element styles. Layered so utility classes (e.g. no-underline) can override them. */
@@ -124,38 +171,408 @@
 		}
 	}
 
-	/* "building..." dots: appear one by one, then reset; widths stay fixed so the container doesn't resize. */
-	.loading-dots span {
+	/* Page frame: exactly one screen tall (dvh follows mobile browser bars), growing only when
+	   the content needs more room. The page's <main> takes the leftover height, so pages can
+	   push things (like the home footer) to the bottom of the screen with mt-auto. */
+	.site-shell {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+		min-height: 100dvh;
+	}
+
+	.site-shell > main {
+		flex-grow: 1;
+	}
+
+	/* Clickable display picture trigger on home */
+	.avatar-trigger {
+		@apply relative inline-block p-0 border-0 bg-transparent rounded-sm cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-heading;
+	}
+
+	.avatar-trigger img {
+		@apply transition-all duration-200;
+	}
+
+	.avatar-trigger:hover img {
+		transform: scale(1.025);
+		box-shadow: 0 0 0 2px var(--line), 0 6px 18px -6px rgba(0, 0, 0, 0.28);
+	}
+
+	/* Profile card modal dialog */
+	html:has(.pcard-dialog[open]) {
+		overflow: hidden;
+	}
+
+	.pcard-dialog {
+		margin: auto;
+		padding: 1rem;
+		border: none;
+		background: transparent;
+		max-width: min(94vw, 456px);
+		width: 100%;
+		overflow: visible;
+		color: inherit;
+	}
+
+	.pcard-dialog::backdrop {
+		background: var(--pcard-backdrop);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		animation: pcard-backdrop-in 180ms ease-out both;
+	}
+
+	.pcard-dialog[open] .pcard-stage {
+		animation: pcard-enter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	.pcard-stage {
+		perspective: 1100px;
+	}
+
+	/* 3D spinnable rotor (front + back faces) */
+	.pcard-rotor {
+		position: relative;
+		transform-style: preserve-3d;
+		cursor: grab;
+		touch-action: none;
+		user-select: none;
+		-webkit-user-select: none;
+		will-change: transform;
+	}
+
+	.pcard-rotor[data-dragging="true"] {
+		cursor: grabbing;
+	}
+
+	.pcard-face {
+		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden;
+		transform-style: flat;
+	}
+
+	.pcard-face--front {
+		position: relative;
+	}
+
+	.pcard-face--back {
+		position: absolute;
+		inset: 0;
+		transform: rotateY(180deg);
+	}
+
+	/* Outer iridescent foil frame */
+	.pcard-frame {
+		position: relative;
+		height: 100%;
+		padding: 2.5px;
+		border-radius: 12px;
+		background: var(--pcard-border-foil);
+		box-shadow: var(--pcard-shadow);
+	}
+
+	/* Inner card surface & blueprint coordinate system */
+	.pcard-inner {
+		--g-side: 1.5rem;
+		--g-top: 2.75rem;
+		--g-bottom: 1.25rem;
+
+		position: relative;
+		height: 100%;
+		overflow: hidden;
+		border-radius: 9.5px;
+		background-color: var(--pcard-bg);
+		isolation: isolate;
+	}
+
+	/* Subtle interactive light sheen following pointer & spin angle */
+	.pcard-sheen {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 30;
 		opacity: 0;
-		animation: loading-dot 1.4s infinite;
+		transition: opacity 220ms ease;
+		background: radial-gradient(
+			340px circle at var(--mx, 72%) var(--my, 24%),
+			var(--pcard-sheen),
+			transparent 65%
+		);
 	}
 
-	.loading-dots span:nth-child(2) {
-		animation-delay: 0.2s;
+	.pcard-rotor:hover .pcard-sheen,
+	.pcard-rotor[data-dragging="true"] .pcard-sheen,
+	.pcard-rotor[data-spinning="true"] .pcard-sheen {
+		opacity: 1;
 	}
 
-	.loading-dots span:nth-child(3) {
-		animation-delay: 0.4s;
+	/* Back face centered blueprint emblem */
+	.pcard-back-body {
+		position: relative;
+		z-index: 15;
+		height: 100%;
+		padding: var(--g-top) var(--g-side) var(--g-bottom);
+		@apply flex flex-col items-center justify-center gap-4 text-center;
+	}
+
+	.pcard-back-emblem {
+		@apply relative w-24 h-24 rounded-full flex items-center justify-center;
+		border: 1px solid var(--pcard-avatar-ring);
+		background: var(--pcard-avatar-bg);
+	}
+
+	.pcard-back-mesh {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 1;
+		opacity: calc(var(--pcard-mesh-opacity) * 0.55);
+	}
+
+	.pcard-back-mesh::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(circle at 50% 48%, var(--pcard-dot-b) 0%, transparent 45%),
+			radial-gradient(circle at 38% 38%, var(--pcard-dot-d) 0%, transparent 48%),
+			radial-gradient(circle at 64% 58%, var(--pcard-dot-a) 0%, transparent 48%);
+		-webkit-mask-image:
+			radial-gradient(circle at center, #000 1px, transparent 1.3px),
+			radial-gradient(circle at 50% 50%, #000 12%, rgba(0, 0, 0, 0.55) 42%, transparent 72%);
+		-webkit-mask-size: 5px 5px, 100% 100%;
+		-webkit-mask-repeat: repeat, no-repeat;
+		-webkit-mask-composite: source-in;
+		mask-image:
+			radial-gradient(circle at center, #000 1px, transparent 1.3px),
+			radial-gradient(circle at 50% 50%, #000 12%, rgba(0, 0, 0, 0.55) 42%, transparent 72%);
+		mask-size: 5px 5px, 100% 100%;
+		mask-repeat: repeat, no-repeat;
+		mask-composite: intersect;
+	}
+
+	/* Top-right halftone dot-mesh sculpture (two moiré layers for 3D depth) */
+	.pcard-mesh {
+		position: absolute;
+		top: -0.75rem;
+		right: -0.75rem;
+		width: 64%;
+		height: 62%;
+		pointer-events: none;
+		z-index: 1;
+		opacity: var(--pcard-mesh-opacity);
+	}
+
+	.pcard-mesh-layer {
+		position: absolute;
+		inset: 0;
+		-webkit-mask-image:
+			radial-gradient(circle at center, #000 1.05px, transparent 1.35px),
+			radial-gradient(ellipse 74% 72% at 68% 36%, #000 16%, rgba(0, 0, 0, 0.72) 48%, transparent 80%);
+		-webkit-mask-size: 4.5px 4.5px, 100% 100%;
+		-webkit-mask-repeat: repeat, no-repeat;
+		-webkit-mask-composite: source-in;
+		mask-image:
+			radial-gradient(circle at center, #000 1.05px, transparent 1.35px),
+			radial-gradient(ellipse 74% 72% at 68% 36%, #000 16%, rgba(0, 0, 0, 0.72) 48%, transparent 80%);
+		mask-size: 4.5px 4.5px, 100% 100%;
+		mask-repeat: repeat, no-repeat;
+		mask-composite: intersect;
+	}
+
+	.pcard-mesh-layer--primary {
+		background:
+			radial-gradient(ellipse 46% 42% at 44% 28%, var(--pcard-dot-a) 0%, transparent 72%),
+			radial-gradient(ellipse 52% 48% at 72% 42%, var(--pcard-dot-b) 0%, transparent 74%),
+			radial-gradient(ellipse 48% 40% at 62% 72%, var(--pcard-dot-b) 0%, transparent 70%),
+			repeating-radial-gradient(
+				ellipse 90% 60% at 66% 38%,
+				rgba(255, 255, 255, 0.24) 0px,
+				rgba(255, 255, 255, 0.24) 2px,
+				transparent 2px,
+				transparent 9px
+			);
+		transform: rotate(-8deg);
+	}
+
+	.pcard-mesh-layer--secondary {
+		opacity: 0.72;
+		background:
+			radial-gradient(ellipse 44% 52% at 78% 24%, var(--pcard-dot-a) 0%, transparent 68%),
+			radial-gradient(ellipse 50% 44% at 54% 58%, var(--pcard-dot-c) 0%, transparent 70%),
+			radial-gradient(ellipse 36% 36% at 84% 66%, var(--pcard-dot-d) 0%, transparent 68%),
+			repeating-radial-gradient(
+				ellipse 70% 95% at 62% 46%,
+				rgba(255, 255, 255, 0.16) 0px,
+				rgba(255, 255, 255, 0.16) 1.5px,
+				transparent 1.5px,
+				transparent 8px
+			);
+		transform: rotate(9deg) scale(1.06);
+	}
+
+	/* Vertical micro-labels inside left & right drafting gutters */
+	.pcard-gutter-label {
+		position: absolute;
+		z-index: 10;
+		pointer-events: none;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-size: 9px;
+		line-height: 1;
+		color: var(--pcard-gutter-text);
+		user-select: none;
+	}
+
+	.pcard-gutter-label--left {
+		left: 0;
+		width: var(--g-side);
+		bottom: 2.25rem;
+		display: flex;
+		justify-content: center;
+		writing-mode: vertical-rl;
+		transform: rotate(180deg);
+		letter-spacing: 0.24em;
+		text-transform: uppercase;
+	}
+
+	.pcard-gutter-label--right {
+		right: 0;
+		width: var(--g-side);
+		bottom: 2.25rem;
+		display: flex;
+		justify-content: center;
+		writing-mode: vertical-rl;
+		letter-spacing: 0.14em;
+	}
+
+	/* Main content column aligned to drafting rails */
+	.pcard-content {
+		position: relative;
+		z-index: 15;
+		padding-left: var(--g-side);
+		padding-right: var(--g-side);
+		padding-bottom: 0.25rem;
+	}
+
+	.pcard-topbar {
+		height: var(--g-top);
+		@apply flex items-center justify-between;
+	}
+
+	.pcard-close {
+		@apply inline-flex items-center justify-center w-7 h-7 -mr-1.5 rounded-full text-muted cursor-pointer border-0 bg-transparent opacity-60 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-heading;
+	}
+
+	.pcard-close:hover {
+		@apply opacity-100 text-heading;
+		transform: rotate(90deg);
+	}
+
+	.pcard-avatar-wrap {
+		@apply w-[5.25rem] h-[5.25rem] rounded-full overflow-hidden p-0.5;
+		border: 1px solid var(--pcard-avatar-ring);
+		background: var(--pcard-avatar-bg);
+	}
+
+	.pcard-name {
+		font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+		font-size: 1.875rem;
+		line-height: 1.12;
+		letter-spacing: -0.015em;
+		color: var(--heading);
+		font-weight: 400;
+	}
+
+	.pcard-status-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 9999px;
+		background: var(--pcard-status-dot);
+		box-shadow: 0 0 8px var(--pcard-status-dot);
+	}
+
+	/* Footer row: links on the left, domain on the right, kept on one line. On very narrow
+	   screens the links wrap among themselves; the domain never drops to its own line. */
+	.pcard-links {
+		@apply flex items-center justify-between gap-x-3;
+	}
+
+	.pcard-links-nav {
+		@apply flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0;
+	}
+
+	.pcard-links-domain {
+		@apply shrink-0 whitespace-nowrap font-mono text-[0.6875rem] text-faint;
+	}
+
+	/* hover: only applies on devices that can hover, so touch screens get the same
+	   highlight while a link is being tapped (:active), and keyboards on focus. */
+	.pcard-links a {
+		@apply font-mono text-xs text-muted no-underline hover:text-heading active:text-heading focus-visible:text-heading transition-colors;
+	}
+
+	@media (max-width: 440px) {
+		.pcard-links,
+		.pcard-links-nav {
+			@apply gap-x-2;
+		}
+
+		.pcard-inner {
+			--g-side: 1.25rem;
+		}
+
+		.pcard-avatar-wrap {
+			@apply w-[4.5rem] h-[4.5rem];
+		}
+
+		.pcard-name {
+			font-size: 1.6rem;
+		}
+	}
+
+	/* Short viewports (e.g. landscape phones): let the dialog scroll so the whole card is
+	   reachable, and give vertical touch gestures to scrolling (horizontal drags still spin). */
+	@media (max-height: 640px) {
+		.pcard-dialog {
+			max-height: 100dvh;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+		}
+
+		.pcard-rotor {
+			touch-action: pan-y;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.loading-dots span {
+		.pcard-dialog::backdrop,
+		.pcard-dialog[open] .pcard-stage {
 			animation: none;
-			opacity: 1;
+		}
+
+		.pcard-close:hover {
+			transform: none;
 		}
 	}
 }
 
-@keyframes loading-dot {
-	0%,
-	15% {
+@keyframes pcard-backdrop-in {
+	from {
 		opacity: 0;
 	}
-	30%,
-	80% {
+	to {
 		opacity: 1;
 	}
-	100% {
+}
+
+@keyframes pcard-enter {
+	from {
 		opacity: 0;
+		transform: translateY(10px) scale(0.96);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
 	}
 }
+

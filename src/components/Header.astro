@@ -12,7 +12,7 @@ const currentPath = Astro.url.pathname;
 const isActive = (href: string) => currentPath.startsWith(href);
 ---
 
-<header class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-8 -mt-8">
+<header class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-4 min-[481px]:mb-8 -mt-8">
 	<a href="/" class="flex items-center gap-2 mr-auto no-underline hover:no-underline">
 		<img src="/icon.png" alt="ar1tra" class="w-5 h-5 rounded-sm" />
 		<span class="font-medium text-heading">ar1tra</span>

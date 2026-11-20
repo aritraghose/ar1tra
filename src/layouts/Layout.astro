@@ -14,6 +14,8 @@ const { title = "Portfolio" } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<!-- Sets the light/dark class before first paint; must stay a blocking script in <head>. -->
+		<script is:inline src="/theme.js"></script>
 		<link rel="icon" type="image/png" href="/icon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
@@ -26,9 +28,9 @@ const { title = "Portfolio" } = Astro.props;
 		<meta property="og:image:alt" content="ar1tra.com og image">
 	</head>
 	<body
-		class="antialiased font-sans flex justify-center min-h-screen"
+		class="antialiased font-sans flex justify-center"
 	>
-		<div class="w-full max-w-2xl px-6 py-12 md:py-20 lg:py-24">
+		<div class="site-shell w-full max-w-2xl px-6 py-12 md:py-20 lg:py-24">
 			<Header />
 			<slot />
 		</div>

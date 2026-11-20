@@ -1,0 +1,453 @@
+---
+import { X } from "@lucide/astro";
+import { profileLinks, linkAttrs } from "../data/links";
+
+interface Props {
+	avatarSrc: string;
+}
+
+const { avatarSrc } = Astro.props;
+
+const details = [
+	{ label: "EDUCATION", value: "BRAC University" },
+	{ label: "DEGREE", value: "B.Sc. CSE · 2021–2025" },
+	{ label: "LOCATION", value: "Dhaka, Bangladesh" },
+];
+
+---
+
+<dialog id="profileCardDialog" class="pcard-dialog" aria-labelledby="pcard-name">
+	<div class="pcard-stage">
+		<div class="pcard-rotor" id="profileCardRotor">
+			<!-- FRONT FACE -->
+			<div class="pcard-face pcard-face--front" id="profileCardFront">
+				<div class="pcard-frame">
+					<div class="pcard-inner">
+						<!-- Top-right halftone dot-mesh sculpture -->
+						<div class="pcard-mesh" aria-hidden="true">
+							<div class="pcard-mesh-layer pcard-mesh-layer--primary"></div>
+							<div class="pcard-mesh-layer pcard-mesh-layer--secondary"></div>
+						</div>
+
+
+						<!-- Vertical gutter micro-labels -->
+						<span class="pcard-gutter-label pcard-gutter-label--left" aria-hidden="true">
+							identity
+						</span>
+
+						<!-- Interactive light sheen -->
+						<div class="pcard-sheen" aria-hidden="true"></div>
+
+						<!-- Card content -->
+						<div class="pcard-content">
+							<!-- Top bar -->
+							<div class="pcard-topbar">
+								<div class="flex items-center gap-2 opacity-65">
+									<img src="/icon.png" alt="" class="w-4 h-4 rounded-[3px]" draggable="false" />
+									<span class="font-mono text-xs tracking-wider text-heading">ar1tra</span>
+								</div>
+								<button
+									type="button"
+									data-pcard-close
+									class="pcard-close"
+									aria-label="Close profile card"
+								>
+									<X size={16} stroke-width={1.75} />
+								</button>
+							</div>
+
+							<!-- Avatar & identity -->
+							<div class="pt-3 pb-3 space-y-4">
+								<div class="pcard-avatar-wrap">
+									<img
+										src={avatarSrc}
+										alt="Aritra Ghose"
+										class="w-full h-full rounded-full object-cover"
+										draggable="false"
+									/>
+								</div>
+
+								<div>
+									<h2 id="pcard-name" class="pcard-name">Aritra Ghose</h2>
+									<p class="font-mono text-sm text-muted mt-1">@ar1tra</p>
+								</div>
+							</div>
+
+
+							<!-- Role & structured details -->
+							<div class="py-3 space-y-3">
+								<div class="flex items-center justify-between gap-3">
+									<span class="font-mono text-[0.8125rem] font-medium text-heading">
+										Software Engineer
+									</span>
+									<span class="inline-flex items-center gap-1.5 font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted shrink-0">
+										<span class="pcard-status-dot" aria-hidden="true"></span>
+										<span>Open to roles</span>
+									</span>
+								</div>
+
+								<dl class="space-y-1.5 font-mono text-xs">
+									{details.map((row) => (
+										<div class="flex items-baseline justify-between gap-4">
+											<dt class="text-[0.6875rem] tracking-[0.08em] text-muted shrink-0">
+												{row.label}
+											</dt>
+											<dd class="text-body text-right">{row.value}</dd>
+										</div>
+									))}
+								</dl>
+							</div>
+
+							<!-- Footer links -->
+							<div class="pt-2 pb-4 pcard-links">
+								<nav aria-label="Profile card links" class="pcard-links-nav">
+									{profileLinks.map((link) => (
+										<a href={link.href} {...linkAttrs(link)}>
+											{link.label}
+										</a>
+									))}
+								</nav>
+								<span class="pcard-links-domain">ar1tra.com</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- BACK FACE -->
+			<div class="pcard-face pcard-face--back" id="profileCardBack" inert>
+				<div class="pcard-frame">
+					<div class="pcard-inner">
+						<div class="pcard-back-mesh" aria-hidden="true"></div>
+
+
+						<span class="pcard-gutter-label pcard-gutter-label--left" aria-hidden="true">ar1tra</span>
+						<span class="pcard-gutter-label pcard-gutter-label--right" aria-hidden="true">ar1tra.com</span>
+
+						<div class="pcard-sheen" aria-hidden="true"></div>
+
+						<!-- Back top bar with matching clean close button -->
+						<div class="relative z-20 px-[var(--g-side)]">
+							<div class="pcard-topbar">
+								<span class="font-mono text-xs tracking-wider text-muted opacity-65">
+									@ar1tra
+								</span>
+								<button
+									type="button"
+									data-pcard-close
+									class="pcard-close"
+									aria-label="Close profile card"
+								>
+									<X size={16} stroke-width={1.75} />
+								</button>
+							</div>
+						</div>
+
+						<!-- Centered emblem -->
+						<div class="pcard-back-body -mt-[var(--g-top)]">
+							<div class="pcard-back-emblem">
+								<img src="/icon.png" alt="" class="w-12 h-12 rounded-md object-cover" draggable="false" />
+							</div>
+							<div class="space-y-1">
+								<p class="font-mono text-sm tracking-[0.2em] text-heading">Aritra</p>
+								<p class="font-mono text-[0.6875rem] text-muted">ar1tra.com // software engineer</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</dialog>
+
+<script>
+	const dialog = document.getElementById("profileCardDialog") as HTMLDialogElement | null;
+	const trigger = document.getElementById("avatarTrigger");
+	const rotor = document.getElementById("profileCardRotor");
+	const front = document.getElementById("profileCardFront");
+	const back = document.getElementById("profileCardBack");
+	const closeButtons = dialog?.querySelectorAll<HTMLButtonElement>("[data-pcard-close]");
+
+	if (dialog && trigger && rotor && front && back) {
+		type Quat = [number, number, number, number]; // [w, x, y, z]
+
+		let q: Quat = [1, 0, 0, 0];
+		let vx = 0; // px/frame horizontal angular impulse
+		let vy = 0; // px/frame vertical angular impulse
+		let dragging = false;
+		let pointerId: number | null = null;
+		let lastX = 0;
+		let lastY = 0;
+		let lastTime = 0;
+		let rafId: number | null = null;
+		let resetRafId: number | null = null;
+		let backdropPointerDown = false;
+		let flipped = false;
+
+		const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+		const DRAG_SENSITIVITY = 0.0082; // radians per pixel
+
+		const mulQuat = (a: Quat, b: Quat): Quat => [
+			a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3],
+			a[0] * b[1] + a[1] * b[0] + a[2] * b[3] - a[3] * b[2],
+			a[0] * b[2] - a[1] * b[3] + a[2] * b[0] + a[3] * b[1],
+			a[0] * b[3] + a[1] * b[2] - a[2] * b[1] + a[3] * b[0],
+		];
+
+		const normQuat = (a: Quat): Quat => {
+			const len = Math.hypot(a[0], a[1], a[2], a[3]) || 1;
+			return [a[0] / len, a[1] / len, a[2] / len, a[3] / len];
+		};
+
+		const applyDelta = (dx: number, dy: number) => {
+			const dist = Math.hypot(dx, dy);
+			if (dist < 1e-4) return;
+			const angle = dist * DRAG_SENSITIVITY;
+			const half = angle * 0.5;
+			const s = Math.sin(half);
+			// Dragging right (+dx) rotates around +Y; dragging down (+dy) rotates around -X.
+			const ax = -dy / dist;
+			const ay = dx / dist;
+			const dq: Quat = [Math.cos(half), ax * s, ay * s, 0];
+			q = normQuat(mulQuat(dq, q));
+		};
+
+		const render = () => {
+			const [w, x, y, z] = q;
+			const xx = x * x;
+			const yy = y * y;
+			const zz = z * z;
+			const xy = x * y;
+			const xz = x * z;
+			const yz = y * z;
+			const wx = w * x;
+			const wy = w * y;
+			const wz = w * z;
+
+			const r00 = 1 - 2 * (yy + zz);
+			const r01 = 2 * (xy - wz);
+			const r02 = 2 * (xz + wy);
+			const r10 = 2 * (xy + wz);
+			const r11 = 1 - 2 * (xx + zz);
+			const r12 = 2 * (yz - wx);
+			const r20 = 2 * (xz - wy);
+			const r21 = 2 * (yz + wx);
+			const r22 = 1 - 2 * (xx + yy);
+
+			rotor.style.transform = `matrix3d(${r00.toFixed(5)},${r10.toFixed(5)},${r20.toFixed(5)},0,${r01.toFixed(5)},${r11.toFixed(5)},${r21.toFixed(5)},0,${r02.toFixed(5)},${r12.toFixed(5)},${r22.toFixed(5)},0,0,0,0,1)`;
+
+			// Only the face turned toward the viewer is focusable / clickable / announced.
+			const nowFlipped = r22 < 0;
+			if (nowFlipped !== flipped) {
+				flipped = nowFlipped;
+				const hiding = flipped ? front : back;
+				const showing = flipped ? back : front;
+				const hadFocus = hiding.contains(document.activeElement);
+				hiding.inert = true;
+				showing.inert = false;
+				if (hadFocus) showing.querySelector<HTMLElement>("[data-pcard-close]")?.focus();
+			}
+
+			// Shift specular sheen smoothly with the card's 3D orientation.
+			const mx = 50 + r02 * 45;
+			const my = 50 + r12 * 45;
+			rotor.style.setProperty("--mx", `${mx.toFixed(1)}%`);
+			rotor.style.setProperty("--my", `${my.toFixed(1)}%`);
+		};
+
+		const stopAnimations = () => {
+			if (rafId !== null) {
+				cancelAnimationFrame(rafId);
+				rafId = null;
+			}
+			if (resetRafId !== null) {
+				cancelAnimationFrame(resetRafId);
+				resetRafId = null;
+			}
+			rotor.dataset.spinning = "false";
+		};
+
+		const resetImmediate = () => {
+			stopAnimations();
+			q = [1, 0, 0, 0];
+			vx = 0;
+			vy = 0;
+			dragging = false;
+			pointerId = null;
+			rotor.dataset.dragging = "false";
+			rotor.dataset.spinning = "false";
+			render();
+		};
+
+		const startInertia = () => {
+			if (rafId !== null) cancelAnimationFrame(rafId);
+			rotor.dataset.spinning = "true";
+			let prev = performance.now();
+
+			const step = (now: number) => {
+				const dt = Math.min(32, Math.max(1, now - prev)) / 16.6667;
+				prev = now;
+
+				applyDelta(vx * dt, vy * dt);
+				render();
+
+				const damping = Math.pow(0.945, dt);
+				vx *= damping;
+				vy *= damping;
+
+				if (Math.hypot(vx, vy) > 0.08) {
+					rafId = requestAnimationFrame(step);
+				} else {
+					vx = 0;
+					vy = 0;
+					rafId = null;
+					rotor.dataset.spinning = "false";
+				}
+			};
+
+			rafId = requestAnimationFrame(step);
+		};
+
+		const smoothResetToFront = () => {
+			stopAnimations();
+			vx = 0;
+			vy = 0;
+
+			if (reducedMotion.matches) {
+				q = [1, 0, 0, 0];
+				render();
+				return;
+			}
+
+			// Ensure shortest arc back to identity [1, 0, 0, 0].
+			const start: Quat = q[0] < 0 ? [-q[0], -q[1], -q[2], -q[3]] : [...q];
+			const startTime = performance.now();
+			const duration = 420;
+
+			const step = (now: number) => {
+				const raw = Math.min(1, (now - startTime) / duration);
+				const t = 1 - Math.pow(1 - raw, 3);
+				q = normQuat([
+					start[0] + (1 - start[0]) * t,
+					start[1] * (1 - t),
+					start[2] * (1 - t),
+					start[3] * (1 - t),
+				]);
+				render();
+
+				if (raw < 1) {
+					resetRafId = requestAnimationFrame(step);
+				} else {
+					q = [1, 0, 0, 0];
+					render();
+					resetRafId = null;
+				}
+			};
+
+			resetRafId = requestAnimationFrame(step);
+		};
+
+		// Open / close handlers
+		trigger.addEventListener("click", () => {
+			if (!dialog.open) {
+				resetImmediate();
+				dialog.showModal();
+			}
+		});
+
+		closeButtons?.forEach((btn) => {
+			btn.addEventListener("click", () => dialog.close());
+		});
+
+		dialog.addEventListener("pointerdown", (e) => {
+			backdropPointerDown = e.target === dialog;
+		});
+
+		dialog.addEventListener("click", (e) => {
+			if (e.target === dialog && backdropPointerDown) {
+				dialog.close();
+			}
+			backdropPointerDown = false;
+		});
+
+		dialog.addEventListener("close", resetImmediate);
+
+		// Unified mouse + touch 3D spin handlers
+		rotor.addEventListener("pointerdown", (e) => {
+			const target = e.target as HTMLElement | null;
+			if (target?.closest("a, button")) return;
+			if (e.pointerType === "mouse" && e.button !== 0) return;
+
+			stopAnimations();
+			dragging = true;
+			pointerId = e.pointerId;
+			lastX = e.clientX;
+			lastY = e.clientY;
+			lastTime = performance.now();
+			vx = 0;
+			vy = 0;
+
+			rotor.dataset.dragging = "true";
+			rotor.setPointerCapture(e.pointerId);
+		});
+
+		rotor.addEventListener("pointermove", (e) => {
+			if (dragging && e.pointerId === pointerId) {
+				const now = performance.now();
+				const dx = e.clientX - lastX;
+				const dy = e.clientY - lastY;
+				const dt = Math.max(4, now - lastTime);
+
+				applyDelta(dx, dy);
+				render();
+
+				// Smooth instantaneous velocity normalized to ~60fps frames.
+				const scale = 16.6667 / dt;
+				vx = vx * 0.45 + dx * scale * 0.55;
+				vy = vy * 0.45 + dy * scale * 0.55;
+
+				lastX = e.clientX;
+				lastY = e.clientY;
+				lastTime = now;
+				return;
+			}
+
+			// When idle on desktop hover, move specular sheen under cursor.
+			if (e.pointerType === "mouse" && rafId === null && resetRafId === null) {
+				const rect = rotor.getBoundingClientRect();
+				const px = ((e.clientX - rect.left) / rect.width) * 100;
+				const py = ((e.clientY - rect.top) / rect.height) * 100;
+				rotor.style.setProperty("--mx", `${px.toFixed(1)}%`);
+				rotor.style.setProperty("--my", `${py.toFixed(1)}%`);
+			}
+		});
+
+		const endDrag = (e: PointerEvent) => {
+			if (!dragging || e.pointerId !== pointerId) return;
+			dragging = false;
+			pointerId = null;
+			rotor.dataset.dragging = "false";
+
+			// If pointer paused briefly before release, bleed off velocity.
+			if (performance.now() - lastTime > 80) {
+				vx = 0;
+				vy = 0;
+			}
+
+			if (!reducedMotion.matches && Math.hypot(vx, vy) > 0.35) {
+				startInertia();
+			}
+		};
+
+		rotor.addEventListener("pointerup", endDrag);
+		rotor.addEventListener("pointercancel", endDrag);
+
+		// Double-click smoothly spins card back to upright front.
+		rotor.addEventListener("dblclick", (e) => {
+			const target = e.target as HTMLElement | null;
+			if (target?.closest("a, button")) return;
+			smoothResetToFront();
+		});
+	}
+</script>

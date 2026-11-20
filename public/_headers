@@ -1,0 +1,8 @@
+# Security headers for static (prerendered) pages and assets served by Workers static assets.
+# Pages rendered by the Worker (e.g. /trace) get the same headers from src/middleware.ts.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000
