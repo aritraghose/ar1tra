@@ -13,7 +13,6 @@ const details = [
 	{ label: "DEGREE", value: "B.Sc. CSE · 2021–2025" },
 	{ label: "LOCATION", value: "Dhaka, Bangladesh" },
 ];
-
 ---
 
 <dialog id="profileCardDialog" class="pcard-dialog" aria-labelledby="pcard-name">
@@ -28,7 +27,6 @@ const details = [
 							<div class="pcard-mesh-layer pcard-mesh-layer--primary"></div>
 							<div class="pcard-mesh-layer pcard-mesh-layer--secondary"></div>
 						</div>
-
 
 						<!-- Vertical gutter micro-labels -->
 						<span class="pcard-gutter-label pcard-gutter-label--left" aria-hidden="true">
@@ -72,7 +70,6 @@ const details = [
 									<p class="font-mono text-sm text-muted mt-1">@ar1tra</p>
 								</div>
 							</div>
-
 
 							<!-- Role & structured details -->
 							<div class="py-3 space-y-3">
@@ -119,7 +116,6 @@ const details = [
 				<div class="pcard-frame">
 					<div class="pcard-inner">
 						<div class="pcard-back-mesh" aria-hidden="true"></div>
-
 
 						<span class="pcard-gutter-label pcard-gutter-label--left" aria-hidden="true">ar1tra</span>
 						<span class="pcard-gutter-label pcard-gutter-label--right" aria-hidden="true">ar1tra.com</span>
@@ -176,6 +172,10 @@ const details = [
 		let vy = 0; // px/frame vertical angular impulse
 		let dragging = false;
 		let pointerId: number | null = null;
+		let touchScrollMode = false;
+		let horizontalLocked = false;
+		let startX = 0;
+		let startY = 0;
 		let lastX = 0;
 		let lastY = 0;
 		let lastTime = 0;
@@ -185,6 +185,7 @@ const details = [
 		let flipped = false;
 
 		const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const shortViewport = window.matchMedia("(max-height: 640px)");
 
 		const DRAG_SENSITIVITY = 0.0082; // radians per pixel
 
@@ -246,7 +247,7 @@ const details = [
 				const hadFocus = hiding.contains(document.activeElement);
 				hiding.inert = true;
 				showing.inert = false;
-				if (hadFocus) showing.querySelector<HTMLElement>("[data-pcard-close]")?.focus();
+				if (hadFocus && dialog.open) showing.querySelector<HTMLElement>("[data-pcard-close]")?.focus();
 			}
 
 			// Shift specular sheen smoothly with the card's 3D orientation.
@@ -275,6 +276,8 @@ const details = [
 			vy = 0;
 			dragging = false;
 			pointerId = null;
+			touchScrollMode = false;
+			horizontalLocked = false;
 			rotor.dataset.dragging = "false";
 			rotor.dataset.spinning = "false";
 			render();
@@ -382,21 +385,47 @@ const details = [
 			stopAnimations();
 			dragging = true;
 			pointerId = e.pointerId;
-			lastX = e.clientX;
-			lastY = e.clientY;
+			touchScrollMode = e.pointerType === "touch" && shortViewport.matches;
+			horizontalLocked = false;
+			startX = lastX = e.clientX;
+			startY = lastY = e.clientY;
 			lastTime = performance.now();
 			vx = 0;
 			vy = 0;
 
-			rotor.dataset.dragging = "true";
-			rotor.setPointerCapture(e.pointerId);
+			// On short touch screens, wait for horizontal intent so vertical swipes scroll cleanly.
+			if (!touchScrollMode) {
+				rotor.dataset.dragging = "true";
+				rotor.setPointerCapture(e.pointerId);
+			}
 		});
 
 		rotor.addEventListener("pointermove", (e) => {
 			if (dragging && e.pointerId === pointerId) {
+				if (touchScrollMode && !horizontalLocked) {
+					const totalDx = e.clientX - startX;
+					const totalDy = e.clientY - startY;
+					if (Math.hypot(totalDx, totalDy) < 6) return;
+
+					if (Math.abs(totalDx) > Math.abs(totalDy)) {
+						horizontalLocked = true;
+						rotor.dataset.dragging = "true";
+						rotor.setPointerCapture(e.pointerId);
+						lastX = e.clientX;
+						lastY = e.clientY;
+						lastTime = performance.now();
+					} else {
+						// Vertical swipe: hand off cleanly to native dialog scrolling.
+						dragging = false;
+						pointerId = null;
+						touchScrollMode = false;
+					}
+					return;
+				}
+
 				const now = performance.now();
 				const dx = e.clientX - lastX;
-				const dy = e.clientY - lastY;
+				const dy = touchScrollMode ? 0 : e.clientY - lastY;
 				const dt = Math.max(4, now - lastTime);
 
 				applyDelta(dx, dy);
@@ -405,7 +434,7 @@ const details = [
 				// Smooth instantaneous velocity normalized to ~60fps frames.
 				const scale = 16.6667 / dt;
 				vx = vx * 0.45 + dx * scale * 0.55;
-				vy = vy * 0.45 + dy * scale * 0.55;
+				vy = touchScrollMode ? 0 : vy * 0.45 + dy * scale * 0.55;
 
 				lastX = e.clientX;
 				lastY = e.clientY;
@@ -425,12 +454,15 @@ const details = [
 
 		const endDrag = (e: PointerEvent) => {
 			if (!dragging || e.pointerId !== pointerId) return;
+			const wasCancelled = e.type === "pointercancel";
 			dragging = false;
 			pointerId = null;
+			touchScrollMode = false;
+			horizontalLocked = false;
 			rotor.dataset.dragging = "false";
 
-			// If pointer paused briefly before release, bleed off velocity.
-			if (performance.now() - lastTime > 80) {
+			// If cancelled (e.g. scroll takeover) or pointer paused before release, bleed off velocity.
+			if (wasCancelled || performance.now() - lastTime > 80) {
 				vx = 0;
 				vy = 0;
 			}
