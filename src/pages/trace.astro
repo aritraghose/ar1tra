@@ -1,0 +1,321 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { COLOS, distanceKm } from "../data/colos";
+
+// Rendered per request: everything here comes from the request itself.
+export const prerender = false;
+
+// Per-visitor data: never cache it at the edge or in shared caches.
+Astro.response.headers.set("Cache-Control", "private, no-store");
+Astro.response.headers.set("CDN-Cache-Control", "no-store");
+
+// The parts of Cloudflare's IncomingRequestCfProperties we read (all plans).
+interface Cf {
+	city?: string;
+	region?: string;
+	regionCode?: string;
+	country?: string;
+	continent?: string;
+	isEUCountry?: string;
+	postalCode?: string;
+	metroCode?: string;
+	latitude?: string;
+	longitude?: string;
+	timezone?: string;
+	asn?: number;
+	asOrganization?: string;
+	colo?: string;
+	httpProtocol?: string;
+	tlsVersion?: string;
+	tlsCipher?: string;
+	tlsClientHelloLength?: string;
+	tlsClientCiphersSha1?: string;
+	tlsClientExtensionsSha1?: string;
+	clientAcceptEncoding?: string;
+	requestPriority?: string;
+	clientTcpRtt?: number;
+}
+
+const request = Astro.request;
+const cf: Cf = (request as Request & { cf?: Cf }).cf ?? {};
+const url = new URL(request.url);
+
+type Row = { label: string; value?: string | null; field?: string };
+const show = (rows: Row[]) => rows.filter((r) => r.field || (r.value != null && r.value !== ""));
+
+const countryName = (cc: string) => {
+	if (cc === "T1") return "Tor network";
+	if (cc === "XX") return null;
+	try {
+		return new Intl.DisplayNames(["en"], { type: "region" }).of(cc) ?? cc;
+	} catch {
+		return cc;
+	}
+};
+const continents: Record<string, string> = {
+	AF: "Africa",
+	AN: "Antarctica",
+	AS: "Asia",
+	EU: "Europe",
+	NA: "North America",
+	OC: "Oceania",
+	SA: "South America",
+};
+const n = (x: number) => Math.round(x).toLocaleString("en-US");
+
+// Where you are (IP geolocation, coarse)
+const place = [cf.city, cf.region, cf.country && countryName(cf.country)].filter(Boolean).join(", ");
+const lat = cf.latitude ? Number(cf.latitude) : null;
+const lon = cf.longitude ? Number(cf.longitude) : null;
+const hasCoords = lat != null && lon != null && Number.isFinite(lat) && Number.isFinite(lon);
+
+// How you got here
+const colo = cf.colo ? COLOS[cf.colo] : undefined;
+const km = hasCoords && colo ? distanceKm(lat!, lon!, colo.lat, colo.lon) : null;
+// Best-case round trip: light in vacuum (~300 km/ms) and in optical fiber (~200 km/ms).
+const vacuumMs = km != null ? (2 * km) / 299.792 : null;
+const fiberMs = km != null ? (2 * km) / 200 : null;
+const tcpRtt = cf.clientTcpRtt || null;
+const vsFiber = (rtt: number) => {
+	if (!fiberMs || fiberMs < 0.5) return "";
+	// Faster than light through fiber means the IP geolocation is off (VPN / relay).
+	return rtt < fiberMs ? " · faster than light allows, so your IP location is probably off" : ` · ${(rtt / fiberMs).toFixed(1)}× the fiber limit`;
+};
+const coloName = cf.colo ? `cf-${cf.colo.toLowerCase()}${colo ? ` (${colo.city})` : ""}` : null;
+
+// Connection
+const forwardSecrecy = cf.tlsVersion
+	? cf.tlsVersion === "TLSv1.3" || /^(ECDHE|DHE)-/.test(cf.tlsCipher ?? "")
+		? "yes"
+		: "no"
+	: null;
+
+// Raw request, as the Worker received it. Allowlist only: anything not listed here
+// (cookies, authorization, IP headers, Access JWTs, headers added by future
+// Cloudflare rules, ...) is never reflected into the page.
+const SHOWN = new Set([
+	"accept",
+	"accept-encoding",
+	"accept-language",
+	"cache-control",
+	"cdn-loop",
+	"cf-ipcountry",
+	"cf-ray",
+	"cf-visitor",
+	"connection",
+	"dnt",
+	"host",
+	"pragma",
+	"priority",
+	"sec-gpc",
+	"upgrade-insecure-requests",
+	"user-agent",
+	"x-forwarded-proto",
+]);
+const isShown = (k: string) => SHOWN.has(k) || k.startsWith("sec-ch-ua") || k.startsWith("sec-fetch-");
+const allHeaders = [...request.headers];
+const headers = allHeaders.filter(([k]) => isShown(k));
+const hiddenCount = allHeaders.length - headers.length;
+const rawRequest = [
+	`${request.method} ${url.pathname} ${cf.httpProtocol ?? "HTTP/1.1"}`,
+	...headers.map(([k, v]) => `${k}: ${v}`),
+	...(hiddenCount ? [`(${hiddenCount} more header${hiddenCount > 1 ? "s" : ""} not shown)`] : []),
+].join("\n");
+
+const sections: { title: string; rows: Row[] }[] = [
+	{
+		title: "Where you are",
+		rows: show([
+			{ label: "location", value: place || "Somewhere on the internet" },
+			{ label: "postal_code", value: cf.postalCode },
+			{ label: "metro_code", value: cf.metroCode },
+			{ label: "region_code", value: cf.regionCode },
+			{ label: "continent", value: cf.continent && (continents[cf.continent] ?? cf.continent) },
+			{ label: "in_eu", value: cf.country ? (cf.isEUCountry === "1" ? "yes" : "no") : null },
+			{ label: "coordinates", value: hasCoords ? `${lat!.toFixed(1)}, ${lon!.toFixed(1)} (rounded)` : null },
+			{ label: "timezone", value: cf.timezone },
+		]),
+	},
+	{
+		title: "How you got here",
+		rows: show([
+			{
+				label: "network",
+				value: cf.asn != null ? `AS${cf.asn}${cf.asOrganization ? ` · ${cf.asOrganization}` : ""}` : null,
+			},
+			{ label: "edge", value: coloName },
+			{ label: "distance", value: km != null ? `~${n(km)} km to the edge` : null },
+			{
+				label: "light_limit",
+				value:
+					vacuumMs != null && fiberMs != null
+						? `${vacuumMs.toFixed(1)} ms in vacuum · ${fiberMs.toFixed(1)} ms in fiber (round trip)`
+						: null,
+			},
+			tcpRtt ? { label: "measured_rtt", value: `${tcpRtt} ms TCP round trip${vsFiber(tcpRtt)}` } : { label: "measured_rtt", field: "rtt" },
+			{ label: "ray_id", value: request.headers.get("cf-ray") },
+			{ label: "received_at", value: new Date().toISOString().replace("T", " ").replace(/\.\d+Z$/, " UTC") },
+		]),
+	},
+	{
+		title: "Connection",
+		rows: show([
+			{ label: "protocol", value: cf.httpProtocol },
+			{ label: "tls", value: cf.tlsVersion },
+			{ label: "cipher", value: cf.tlsCipher },
+			{ label: "forward_secrecy", value: forwardSecrecy },
+			{ label: "client_hello", value: cf.tlsClientHelloLength ? `${cf.tlsClientHelloLength} bytes` : null },
+			{ label: "ciphers_sha1", value: cf.tlsClientCiphersSha1 },
+			{ label: "extensions_sha1", value: cf.tlsClientExtensionsSha1 },
+			{ label: "accept_encoding", value: cf.clientAcceptEncoding },
+			{ label: "priority", value: cf.requestPriority },
+		]),
+	},
+	{
+		title: "Your browser",
+		rows: [
+			{ label: "local_time", field: "local_time" },
+			{ label: "languages", field: "languages" },
+			{ label: "screen", field: "screen" },
+			{ label: "cpu", field: "cpu" },
+			{ label: "memory", field: "memory" },
+			{ label: "network_hint", field: "network_hint" },
+			{ label: "preferences", field: "preferences" },
+		],
+	},
+];
+---
+
+<Layout title="Trace | ar1tra">
+	<main class="space-y-10" id="trace" data-ip-tz={cf.timezone ?? ""} data-fiber-ms={fiberMs ?? ""} data-colo={cf.colo ?? ""}>
+		<section class="space-y-2">
+			<h1 class="text-lg font-medium text-heading">Trace</h1>
+			<p class="text-subtle">Nothing is stored or sent anywhere else.</p>
+		</section>
+
+		{sections.map((s) => (
+			<section class="space-y-3">
+				<h2 class="text-base font-medium text-muted">{s.title}</h2>
+				<dl class="space-y-1.5 font-mono text-[0.8125rem] leading-[1.6]">
+					{s.rows.map((r) => (
+						<div class="grid grid-cols-[8.5rem_1fr] gap-4">
+							<dt class="text-muted">{r.label}</dt>
+							<dd class="text-body tabular-nums break-words min-w-0" data-field={r.field}>
+								{r.field ? "…" : r.value}
+							</dd>
+						</div>
+					))}
+				</dl>
+			</section>
+		))}
+
+		<section class="space-y-3">
+			<h2 class="text-base font-medium text-muted">Raw request</h2>
+			<pre class="overflow-x-auto border border-line rounded-sm p-4 text-xs leading-[1.7] text-body">{rawRequest}</pre>
+		</section>
+	</main>
+</Layout>
+
+<script>
+	const root = document.getElementById("trace");
+	const set = (name: string, text: string) => {
+		const el = root?.querySelector<HTMLElement>(`[data-field="${name}"]`);
+		if (el) el.textContent = text;
+	};
+	const unsupported = "Not exposed by this browser";
+
+	const utcOffset = (tz: string) => {
+		const part = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "longOffset" })
+			.formatToParts(new Date())
+			.find((p) => p.type === "timeZoneName")?.value;
+		return part === "GMT" ? "UTC+00:00" : (part?.replace("GMT", "UTC") ?? "");
+	};
+
+	function startClock() {
+		const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+		const ipTz = root?.dataset.ipTz || null;
+		const fmt = new Intl.DateTimeFormat("en-US", {
+			timeZone: tz,
+			hour: "numeric",
+			minute: "2-digit",
+			second: "2-digit",
+			hour12: true,
+		});
+		let suffix = `${tz}, ${utcOffset(tz)}`;
+		// Browser clock and IP geolocation disagree: probably a VPN / proxy / relay.
+		if (ipTz && ipTz !== tz) suffix += ` · IP suggests ${ipTz}, VPN?`;
+		const tick = () => set("local_time", `${fmt.format(new Date())} (${suffix})`);
+		tick();
+		setInterval(tick, 1000);
+	}
+
+	// Cloudflare only measures TCP RTT; over HTTP/3 (QUIC) it's absent. Fall back to timing
+	// a few uncached requests for a tiny static file on this same site, and keep the fastest.
+	async function measureRtt() {
+		if (!root?.querySelector('[data-field="rtt"]')) return;
+		const colo = root.dataset.colo;
+		const fiberMs = Number(root.dataset.fiberMs) || 0;
+		const samples: number[] = [];
+		for (let i = 0; i < 4; i++) {
+			try {
+				const u = `/favicon.svg?rtt=${Date.now()}-${i}`;
+				// The timing entry is only recorded once the body has been read.
+				await (await fetch(u, { cache: "no-store" })).arrayBuffer();
+				const e = performance.getEntriesByName(new URL(u, location.href).href).pop() as
+					| PerformanceResourceTiming
+					| undefined;
+				if (e && e.responseStart > e.requestStart) samples.push(e.responseStart - e.requestStart);
+			} catch {
+				break;
+			}
+		}
+		if (!samples.length) return set("rtt", "Unknown");
+		const best = Math.round(Math.min(...samples));
+		const to = colo ? ` to cf-${colo.toLowerCase()}` : "";
+		const ratio =
+			fiberMs < 0.5
+				? ""
+				: best < fiberMs
+					? " · faster than light allows, so your IP location is probably off"
+					: ` · ${(best / fiberMs).toFixed(1)}× the fiber limit`;
+		set("rtt", `~${best} ms HTTP round trip${to} (best of ${samples.length})${ratio}`);
+	}
+
+	function browserInfo() {
+		set("languages", navigator.languages?.length ? navigator.languages.join(", ") : navigator.language);
+		set(
+			"screen",
+			`${screen.width}×${screen.height} @${window.devicePixelRatio}x · viewport ${innerWidth}×${innerHeight}`,
+		);
+		set("cpu", navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} logical cores` : unsupported);
+
+		const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+		set("memory", mem ? `~${mem} GB (rounded by the browser)` : unsupported);
+
+		const conn = (
+			navigator as Navigator & { connection?: { effectiveType?: string; downlink?: number; rtt?: number } }
+		).connection;
+		set(
+			"network_hint",
+			conn?.effectiveType
+				? [conn.effectiveType, conn.downlink && `~${conn.downlink} Mbps`, conn.rtt && `~${conn.rtt} ms`]
+						.filter(Boolean)
+						.join(" · ") + " (browser estimate)"
+				: unsupported,
+		);
+
+		const mq = (q: string) => window.matchMedia(q).matches;
+		set(
+			"preferences",
+			[
+				`${mq("(prefers-color-scheme: dark)") ? "dark" : "light"} color scheme`,
+				`reduced motion ${mq("(prefers-reduced-motion: reduce)") ? "on" : "off"}`,
+				mq("(pointer: coarse)") ? "touch" : "mouse/trackpad",
+			].join(" · "),
+		);
+	}
+
+	startClock();
+	browserInfo();
+	measureRtt();
+</script>
