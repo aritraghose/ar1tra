@@ -3,21 +3,9 @@ import { Sun, Moon } from "@lucide/astro";
 ---
 
 <button id="themeToggle" aria-label="Toggle theme" class="cursor-pointer">
-  <Sun class="sun" size={18} />
-  <Moon class="moon" size={18} />
+  <Sun class="block dark:hidden" size={18} />
+  <Moon class="hidden dark:block" size={18} />
 </button>
-
-<style>
-  #themeToggle {
-    border: 0;
-    background: none;
-  }
-  .sun { display: block; }
-  .moon { display: none; }
-
-  :global(.dark) .sun { display: none; }
-  :global(.dark) .moon { display: block; }
-</style>
 
 <script is:inline>
   const theme = (() => {

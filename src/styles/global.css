@@ -3,53 +3,159 @@
 /* Make dark: utilities follow the site theme toggle (html.dark) instead of the OS setting. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Design tokens: the single source of truth for site colors.
+ * Markup uses the semantic utilities these generate (bg-page, text-heading, text-body,
+ * text-subtle, text-muted, text-faint, border-line, bg-tooltip, text-tooltip-fg)
+ * instead of raw palette values, so light/dark switching lives only here.
+ */
+:root {
+	--page: var(--color-white);
+	--heading: var(--color-gray-900);
+	--body: var(--color-gray-800);
+	--subtle: var(--color-gray-600);
+	--muted: var(--color-gray-500);
+	--faint: var(--color-gray-400);
+	--line: var(--color-gray-200);
+	--tooltip: var(--color-gray-900);
+	--tooltip-fg: var(--color-white);
 
-
-body {
-    @apply text-gray-800;
+	--link: var(--color-gray-600);
+	--link-hover: var(--color-black);
+	--link-line: var(--color-gray-300);
+	--link-line-hover: var(--color-black);
 }
 
-/* Mobile font size adjustments */
-@media (max-width: 640px) {
-    html {
-        font-size: 14px;
-    }
+.dark {
+	--page: #121212;
+	--heading: var(--color-gray-100);
+	--body: var(--color-gray-100);
+	--subtle: var(--color-gray-300);
+	--muted: var(--color-gray-400);
+	--faint: var(--color-gray-400);
+	--line: #2a2a2a;
+	--tooltip: #2a2a2a;
+	--tooltip-fg: var(--color-gray-100);
+
+	--link: var(--color-gray-300);
+	--link-hover: var(--color-white);
+	--link-line: var(--color-gray-500);
+	--link-line-hover: var(--color-white);
 }
 
-a {
-    @apply text-gray-600 hover:text-black transition-colors underline decoration-gray-300 underline-offset-4 hover:decoration-black;
+@theme inline {
+	--color-page: var(--page);
+	--color-heading: var(--heading);
+	--color-body: var(--body);
+	--color-subtle: var(--subtle);
+	--color-muted: var(--muted);
+	--color-faint: var(--faint);
+	--color-line: var(--line);
+	--color-tooltip: var(--tooltip);
+	--color-tooltip-fg: var(--tooltip-fg);
 }
 
+/* Base element styles. Layered so utility classes (e.g. no-underline) can override them. */
+@layer base {
+	html {
+		background-color: var(--page);
+	}
 
-html.dark {
-    background-color: #121212;
-  }
+	body {
+		@apply bg-page text-body;
+	}
 
-  html.dark body {
-    @apply bg-[#121212] text-gray-50;
-  }
+	/* Mobile font size adjustments */
+	@media (max-width: 640px) {
+		html {
+			font-size: 14px;
+		}
+	}
 
-  .dark a {
-    @apply text-gray-300 hover:text-white decoration-gray-500 hover:decoration-white;
-  }
+	a {
+		@apply underline underline-offset-4 transition-colors;
+		color: var(--link);
+		text-decoration-color: var(--link-line);
+	}
 
-  /* Typography */
-  .dark h1, .dark h2 {
-    @apply text-gray-100;
-  }
+	a:hover {
+		color: var(--link-hover);
+		text-decoration-color: var(--link-line-hover);
+	}
+}
 
-  .dark .text-gray-900 {
-    @apply text-gray-100;
-  }
+/* Reusable component styles. */
+@layer components {
+	/* Primary nav (Header) */
+	.site-nav {
+		@apply flex gap-4 font-mono text-[0.8125rem];
+	}
 
-  .dark .text-gray-800 {
-    @apply text-gray-100;
-  }
+	.site-nav a {
+		@apply relative text-muted no-underline hover:text-heading;
+	}
 
-  .dark .text-gray-600 {
-    @apply text-gray-300;
-  }
+	.site-nav a[aria-current="page"] {
+		@apply text-body font-semibold;
+	}
 
-  .dark .text-gray-500 {
-    @apply text-gray-400;
-  }
+	/* small dot under the active page */
+	.site-nav a[aria-current="page"]::after {
+		content: "";
+		position: absolute;
+		left: 50%;
+		bottom: -0.4rem;
+		width: 3px;
+		height: 3px;
+		border-radius: 50%;
+		background: currentColor;
+		transform: translateX(-50%);
+	}
+
+	@media (max-width: 480px) {
+		.site-nav {
+			order: 3;
+			width: 100%;
+			margin-top: 0.5rem;
+		}
+
+		.site-nav a[aria-current="page"]::after {
+			display: none;
+		}
+	}
+
+	/* "building..." dots: appear one by one, then reset; widths stay fixed so the container doesn't resize. */
+	.loading-dots span {
+		opacity: 0;
+		animation: loading-dot 1.4s infinite;
+	}
+
+	.loading-dots span:nth-child(2) {
+		animation-delay: 0.2s;
+	}
+
+	.loading-dots span:nth-child(3) {
+		animation-delay: 0.4s;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.loading-dots span {
+			animation: none;
+			opacity: 1;
+		}
+	}
+}
+
+@keyframes loading-dot {
+	0%,
+	15% {
+		opacity: 0;
+	}
+	30%,
+	80% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

@@ -70,43 +70,43 @@ const competitions = [
 	<main class="space-y-10">
 		<!-- Education -->
 		<section class="space-y-3">
-			<h2 class="text-base font-medium text-gray-500">Education</h2>
+			<h2 class="text-base font-medium text-muted">Education</h2>
 			<div>
-				<p class="font-medium text-gray-800">BRAC University</p>
-				<p class="text-gray-600">B.Sc. in Computer Science and Engineering</p>
-				<p class="text-gray-500 text-sm">2021 - 2025 | Dhaka, Bangladesh</p>
+				<p class="font-medium text-body">BRAC University</p>
+				<p class="text-subtle">B.Sc. in Computer Science and Engineering</p>
+				<p class="text-muted text-sm">2021 - 2025 | Dhaka, Bangladesh</p>
 			</div>
 		</section>
 
 		<!-- Skills -->
 		<section class="space-y-3">
-			<h2 class="text-base font-medium text-gray-500">Skills</h2>
+			<h2 class="text-base font-medium text-muted">Skills</h2>
 			<div class="space-y-2">
 				<div>
-					<p class="text-gray-600 text-sm">Languages & Frameworks</p>
-					<p class="text-gray-800">{skills.languages.join(" · ")}</p>
+					<p class="text-subtle text-sm">Languages & Frameworks</p>
+					<p class="text-body">{skills.languages.join(" · ")}</p>
 				</div>
 				<div>
-					<p class="text-gray-600 text-sm">Infrastructure & Tools</p>
-					<p class="text-gray-800">{skills.infrastructure.join(" · ")}</p>
+					<p class="text-subtle text-sm">Infrastructure & Tools</p>
+					<p class="text-body">{skills.infrastructure.join(" · ")}</p>
 				</div>
 			</div>
 		</section>
 
 		<!-- Coursework -->
 		<section class="space-y-3">
-			<h2 class="text-base font-medium text-gray-500">Coursework</h2>
-			<p class="text-gray-800">{coursework.join(" · ")}</p>
+			<h2 class="text-base font-medium text-muted">Coursework</h2>
+			<p class="text-body">{coursework.join(" · ")}</p>
 		</section>
 
 		<!-- Projects -->
 		<section class="space-y-4">
-			<h2 class="text-base font-medium text-gray-500">Projects</h2>
+			<h2 class="text-base font-medium text-muted">Projects</h2>
 			<div class="space-y-4">
 				{projects.map((project) => (
 					<div class="space-y-1">
 						<div class="flex flex-wrap items-baseline gap-2">
-							<span class="font-medium text-gray-900">{project.name}</span>
+							<span class="font-medium text-heading">{project.name}</span>
 							{project.links.source && (
 								<a href={project.links.source} target="_blank" rel="noopener noreferrer" class="text-sm">Source</a>
 							)}
@@ -114,8 +114,8 @@ const competitions = [
 								<a href={project.links.demo} target="_blank" rel="noopener noreferrer" class="text-sm">Demo</a>
 							)}
 						</div>
-						<p class="text-gray-600 text-sm">{project.description}</p>
-						<p class="text-gray-500 text-xs">{project.techStack}</p>
+						<p class="text-subtle text-sm">{project.description}</p>
+						<p class="text-muted text-xs">{project.techStack}</p>
 					</div>
 				))}
 			</div>
@@ -123,23 +123,23 @@ const competitions = [
 
 		<!-- Thesis -->
 		<section class="space-y-3">
-			<h2 class="text-base font-medium text-gray-500">Thesis</h2>
+			<h2 class="text-base font-medium text-muted">Thesis</h2>
 			<div>
-				<p class="font-medium text-gray-800">Evaluating the Efficacy of GAN-Generated Synthetic Medical Images in Enhancing Deep Learning-Based Diagnosis of Rare Diseases</p>
-				<p class="text-gray-600 text-sm">Undergraduate Thesis | BRAC University | Status: Defended</p>
-				<p class="text-gray-500 text-sm">Supervisor: Md. Tawhid Anwar | Co-Supervisor: Md. Sabbir Ahmed</p>
+				<p class="font-medium text-body">Evaluating the Efficacy of GAN-Generated Synthetic Medical Images in Enhancing Deep Learning-Based Diagnosis of Rare Diseases</p>
+				<p class="text-subtle text-sm">Undergraduate Thesis | BRAC University | Status: Defended</p>
+				<p class="text-muted text-sm">Supervisor: Md. Tawhid Anwar | Co-Supervisor: Md. Sabbir Ahmed</p>
 			</div>
 		</section>
 
 		<!-- Coding Competitions -->
 		<section class="space-y-3">
-			<h2 class="text-base font-medium text-gray-500">Coding Competitions</h2>
+			<h2 class="text-base font-medium text-muted">Coding Competitions</h2>
 			<div class="space-y-2">
 				{competitions.map((comp) => (
 					<div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3">
-						<span class="text-gray-500 text-sm shrink-0">{comp.year}</span>
-						<span class="text-gray-800">{comp.achievement}</span>
-						<span class="text-gray-600 text-sm">{comp.event}</span>
+						<span class="text-muted text-sm shrink-0">{comp.year}</span>
+						<span class="text-body">{comp.achievement}</span>
+						<span class="text-subtle text-sm">{comp.event}</span>
 					</div>
 				))}
 			</div>
@@ -147,7 +147,7 @@ const competitions = [
 
 		<!-- Links -->
 		<section class="space-y-3">
-			<h2 class="text-base font-medium text-gray-500">Links</h2>
+			<h2 class="text-base font-medium text-muted">Links</h2>
 			<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
 				<a href="https://github.com/aritraghose" target="_blank" rel="noopener noreferrer">GitHub</a>
 				<a href="https://www.linkedin.com/in/aritraghose/" target="_blank" rel="noopener noreferrer">LinkedIn</a>

@@ -11,14 +11,14 @@ const rows = [
 ---
 
 <div class="space-y-6 text-xs leading-[1.6] font-mono">
-	<p class="mt-16 text-center text-gray-400"><slot /></p>
-	<section id="visitor-info" class="border-t border-gray-200 dark:border-[#2a2a2a] pt-6 space-y-3" aria-live="polite" hidden>
-		<h2 class="text-gray-500">Your visit</h2>
+	<p class="mt-16 text-center text-faint"><slot /></p>
+	<section id="visitor-info" class="border-t border-line pt-6 space-y-3" aria-live="polite" hidden>
+		<h2 class="text-muted">Your visit</h2>
 		<dl class="space-y-1.5">
 			{rows.map(({ key, label }) => (
 				<div class="grid grid-cols-[6.5rem_1fr] gap-4">
-					<dt class="text-gray-500">{label}</dt>
-					<dd class="text-gray-800 tabular-nums break-words" data-field={key}>resolving…</dd>
+					<dt class="text-muted">{label}</dt>
+					<dd class="text-body tabular-nums break-words" data-field={key}>resolving…</dd>
 				</div>
 			))}
 		</dl>
